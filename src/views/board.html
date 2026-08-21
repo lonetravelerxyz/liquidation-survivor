@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Survival Board — Liquidation Survivor</title>
+    <meta
+      name="description"
+      content="Public Survival Board: wallets protected and debt repaid by Liquidation Survivor on X Layer."
+    />
+    <meta property="og:title" content="Survival Board — Liquidation Survivor" />
+    <meta property="og:image" content="/static/assets/exports/og-1200x630.png" />
+    <link rel="icon" href="/static/assets/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="/static/assets/app-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&family=Geist+Mono:wght@400;500&display=swap" />
+<link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Liquidation Survivor home">
+          <img src="/static/assets/owl-transparent.svg" alt="" />
+          <span>
+            <div class="name">Liquidation Survivor</div>
+            
+          </span>
+        </a>
+        <span class="spacer"></span>
+        <span id="netBadge" class="badge"><span class="dot"></span><span id="netName">…</span></span>
+        <a class="btn" href="/">Protect my position</a>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="board-hero">
+        <img src="/static/assets/owl-transparent.svg" alt="" />
+        <h1>Survival Board</h1>
+        <p>Every protection the sentinel has executed on X Layer — public, on-chain, verifiable.</p>
+      </section>
+
+      <section class="tiles" aria-label="Statistics">
+        <div class="tile">
+          <div class="k">Protected wallets</div>
+          <div class="v" id="sEnrolled">—</div>
+          <div class="sub">active plans</div>
+        </div>
+        <div class="tile">
+          <div class="k">Protections executed</div>
+          <div class="v" id="sProtections">—</div>
+        </div>
+        <div class="tile">
+          <div class="k">Total repaid</div>
+          <div class="v" id="sRepaid">—</div>
+          <div class="sub" id="sRepaidByAsset"></div>
+        </div>
+        <div class="tile">
+          <div class="k">Last indexed block</div>
+          <div class="v" id="sBlock">—</div>
+          <div class="sub" id="sUpdated"></div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="recentTitle">
+        <div class="card-head">
+          <h2 id="recentTitle">Recent protections</h2>
+          <span id="boardMsg" class="badge hidden"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>Wallet</th>
+                <th class="num">Repaid</th>
+                <th class="num">HF before → after</th>
+                <th>Keeper</th>
+                <th>Tx</th>
+              </tr>
+            </thead>
+            <tbody id="rows">
+              <tr>
+                <td colspan="6" class="mute">loading…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="walletsTitle">
+        <div class="card-head">
+          <h2 id="walletsTitle">Protected wallets</h2>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Wallet</th>
+                <th class="num">Protections</th>
+                <th class="num">Last HF</th>
+              </tr>
+            </thead>
+            <tbody id="walletRows">
+              <tr>
+                <td colspan="3" class="mute">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <p class="refresh-note">
+        Refreshes every 30 s — <a href="/">Open the app</a> — <a id="shareLink" href="#">Copy share link</a>
+      </p>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <div>
+          <h3>Links</h3>
+          <ul>
+            <li>
+              <a id="guardLink" href="#" target="_blank" rel="noopener">SurvivalGuard contract on explorer</a>
+            </li>
+          </ul>
+          <p class="small" style="margin-top: 12px">
+            By Dark Survivor. Built on X Layer.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="/static/board.js"></script>
+  </body>
+</html>

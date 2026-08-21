@@ -1,0 +1,10 @@
+node_modules/
+dist/
+data/
+pnpm-lock.yaml
+contracts/lib/
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+assets/
+web/

@@ -1,0 +1,5 @@
+allowBuilds:
+  better-sqlite3: true
+  esbuild: true
+minimumReleaseAgeExclude:
+  - viem@2.55.19

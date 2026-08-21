@@ -1,0 +1,50 @@
+{
+  "name": "liquidation-survivor",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Liquidation Survivor by Dark Survivor \u2014 AI-explained, contract-enforced liquidation protection for Aave V3 on X Layer.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@11.8.0",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node --import tsx src/index.ts",
+    "build": "tsc -p tsconfig.json && rm -rf dist/views && cp -R src/views dist/views",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "migrate": "node --import tsx src/db/migrate.ts",
+    "contracts:build": "forge build --root contracts",
+    "contracts:test": "forge test --root contracts -vv",
+    "contracts:fork-test": "forge test --root contracts --match-path 'test/fork/*' --fork-url ${XLAYER_RPC_URL:-https://rpc.xlayer.tech} -vv",
+    "sentinel": "node --import tsx src/sentinel/run.ts",
+    "demo:testnet": "node --import tsx scripts/demo/testnet-sequence.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.117.1",
+    "better-sqlite3": "^13.0.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "grammy": "^1.45.1",
+    "pino": "^9.5.0",
+    "pino-pretty": "^11.3.0",
+    "viem": "^2.55.19",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.10.2",
+    "eslint": "^10.8.0",
+    "globals": "^17.9.0",
+    "prettier": "^3.9.6",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.65.0"
+  }
+}

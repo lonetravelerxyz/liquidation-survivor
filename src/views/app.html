@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Liquidation Survivor — survive the dip on X Layer</title>
+    <meta
+      name="description"
+      content="AI-explained, contract-enforced liquidation protection for Aave V3 borrowers on X Layer. By Dark Survivor."
+    />
+    <meta property="og:title" content="Liquidation Survivor" />
+    <meta
+      property="og:description"
+      content="Survive the dip. A contract that can only ever repay your own debt."
+    />
+    <meta property="og:image" content="/static/assets/exports/og-1200x630.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/static/assets/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="/static/assets/app-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&family=Geist+Mono:wght@400;500&display=swap" />
+<link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Liquidation Survivor home">
+          <img src="/static/assets/owl-transparent.svg" alt="" />
+          <span>
+            <div class="name">Liquidation Survivor</div>
+            
+          </span>
+        </a>
+        <span class="spacer"></span>
+        <span id="netBadge" class="badge"
+          ><span class="dot"></span><span id="netName">Loading network…</span></span
+        >
+        <a class="badge" href="/board">Survival Board</a>
+        <button id="connectBtn" type="button">Connect OKX Wallet</button>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="hero">
+        <h1>Survive the dip.</h1>
+        <p>
+          AI watches your Aave V3 position on X Layer around the clock, explains your risk in plain words, and
+          a contract that can only ever repay <em>your own</em> debt steps in before you get liquidated.
+        </p>
+        <div id="globalMsg" class="alert hidden" role="status" aria-live="polite"></div>
+      </section>
+
+      <!-- 2. Position -->
+      <section class="card" id="positionCard" aria-labelledby="posTitle">
+        <div class="card-head">
+          <h2 id="posTitle">Your position</h2>
+          <span id="posAddr" class="badge mono">not connected</span>
+          <button id="refreshBtn" class="ghost sm" type="button" disabled>Refresh</button>
+        </div>
+        <div class="hf-row">
+          <svg id="hfGauge" class="gauge" viewBox="0 0 160 100" role="img" aria-label="Health factor gauge">
+            <path
+              class="track"
+              d="M16 88 A64 64 0 0 1 144 88"
+              fill="none"
+              stroke-width="12"
+              stroke-linecap="round"
+            />
+            <path
+              id="hfArc"
+              class="val"
+              d="M16 88 A64 64 0 0 1 144 88"
+              fill="none"
+              stroke-width="12"
+              stroke-linecap="round"
+              stroke-dasharray="201"
+              stroke-dashoffset="201"
+            />
+            <text id="hfText" x="80" y="82" text-anchor="middle" font-size="26">—</text>
+            <text x="80" y="97" text-anchor="middle" font-size="9" fill="#8AA79B">HEALTH FACTOR</text>
+          </svg>
+          <div>
+            <div class="tiles">
+              <div class="tile">
+                <div class="k">Collateral</div>
+                <div class="v" id="posCollateral">—</div>
+              </div>
+              <div class="tile">
+                <div class="k">Debt</div>
+                <div class="v" id="posDebt">—</div>
+              </div>
+              <div class="tile">
+                <div class="k">Liq. threshold</div>
+                <div class="v" id="posLt">—</div>
+              </div>
+              <div class="tile">
+                <div class="k">On-chain HF</div>
+                <div class="v" id="posHfChain">—</div>
+                <div class="sub">read from Pool.getUserAccountData</div>
+              </div>
+            </div>
+            <p class="small mute" id="posStatus" style="margin-top: 8px">
+              Connect your wallet to read your Aave position.
+            </p>
+          </div>
+        </div>
+        <div class="table-wrap" style="margin-top: 12px">
+          <table aria-label="Per-asset balances">
+            <thead>
+              <tr>
+                <th>Asset</th>
+                <th class="num">Price</th>
+                <th class="num">Supplied</th>
+                <th class="num">Borrowed</th>
+                <th class="num">Liq. price hint</th>
+              </tr>
+            </thead>
+            <tbody id="reserveRows">
+              <tr>
+                <td colspan="5" class="mute">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 3. AI report -->
+      <section class="card" id="aiCard" aria-labelledby="aiTitle">
+        <div class="card-head">
+          <h2 id="aiTitle">AI Sentinel report</h2>
+          <span id="aiSource" class="badge hidden"></span>
+          <button id="explainBtn" class="ghost sm" type="button" disabled>Explain my risk</button>
+        </div>
+        <p id="aiSummary" class="summary mute">
+          Connect a wallet and the Sentinel will explain your position in plain words.
+        </p>
+        <ul id="aiRisks" class="clean"></ul>
+        <div id="aiLiq" class="small mute"></div>
+        <div id="aiReco" class="reco hidden">
+          <div class="row between">
+            <strong>Recommended plan</strong>
+            <button id="usePlanBtn" class="sm" type="button">Use this plan</button>
+          </div>
+          <dl class="kv" id="aiRecoKv" style="margin-top: 8px"></dl>
+          <ul id="aiRationale" class="clean small mute"></ul>
+        </div>
+      </section>
+
+      <div class="grid-2">
+        <!-- 4. Plan form -->
+        <section class="card" id="planCard" aria-labelledby="planTitle">
+          <div class="card-head">
+            <span class="step">1</span>
+            <h2 id="planTitle">Protection plan</h2>
+          </div>
+          <form id="planForm" novalidate>
+            <div class="form-grid">
+              <label class="field"
+                >Debt asset to repay
+                <select id="fDebtAsset" name="debtAsset" required></select>
+                <span class="hint">stablecoin buffer you hold in your wallet</span>
+              </label>
+              <label class="field"
+                >Trigger HF
+                <input
+                  id="fTrigger"
+                  name="triggerHF"
+                  type="number"
+                  step="0.01"
+                  min="1"
+                  value="1.15"
+                  required
+                />
+                <span class="hint">protect when HF drops below (≥ 1.00)</span>
+              </label>
+              <label class="field"
+                >Target HF
+                <input
+                  id="fTarget"
+                  name="targetHF"
+                  type="number"
+                  step="0.01"
+                  min="1.01"
+                  max="10"
+                  value="1.35"
+                  required
+                />
+                <span class="hint">repay enough to reach (&gt; trigger, ≤ 10)</span>
+              </label>
+              <label class="field"
+                >Max repay per protect
+                <input id="fMaxRepay" name="maxRepay" type="number" step="any" min="0" value="100" required />
+                <span class="hint" id="fMaxRepayHint">token units, hard cap per call</span>
+              </label>
+              <label class="field"
+                >Cooldown (minutes)
+                <input id="fCooldown" name="cooldown" type="number" step="1" min="0" value="5" required />
+                <span class="hint">between two protections</span>
+              </label>
+            </div>
+            <div id="planErr" class="alert err hidden" style="margin-top: 10px"></div>
+          </form>
+          <div style="margin-top: 14px">
+            <dl class="kv">
+              <dt>Current on-chain plan</dt>
+              <dd id="curPlan">—</dd>
+              <dt>Allowance → guard</dt>
+              <dd id="curAllowance">—</dd>
+              <dt>Buffer balance</dt>
+              <dd id="curBalance">—</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- 5. Two-transaction flow -->
+        <section class="card" id="txCard" aria-labelledby="txTitle">
+          <div class="card-head">
+            <span class="step">2</span>
+            <h2 id="txTitle">Approve &amp; enroll</h2>
+          </div>
+          <div class="form-grid">
+            <label class="field"
+              >Approve amount
+              <input id="fApprove" type="number" step="any" min="0" value="300" />
+              <span class="hint">defaults to 3 × max repay</span>
+            </label>
+            <label class="check" style="align-self: end"
+              ><input id="fUnlimited" type="checkbox" /> unlimited allowance</label
+            >
+          </div>
+          <div class="actions">
+            <button id="approveBtn" type="button" disabled>1) Approve buffer</button>
+            <button id="enrollBtn" type="button" disabled>2) Enroll</button>
+          </div>
+          <div class="actions">
+            <button id="disableBtn" class="danger sm" type="button" disabled>Disable protection</button>
+            <button id="revokeBtn" class="ghost sm" type="button" disabled>Revoke allowance</button>
+          </div>
+          <p class="small mute" style="margin-top: 10px">
+            Two signatures. The guard can pull at most <em>min(allowance, max repay, your debt)</em> per
+            protection, and can only send it to <em>your own</em> Aave debt. No fee is taken.
+          </p>
+          <div id="txLog" class="tx-log" aria-live="polite"></div>
+        </section>
+      </div>
+
+      <!-- 6. Dashboard -->
+      <section class="card" id="dashCard" aria-labelledby="dashTitle">
+        <div class="card-head">
+          <h2 id="dashTitle">Sentinel dashboard</h2>
+          <button id="tgBtn" class="ghost sm" type="button" disabled>Get Telegram alerts</button>
+        </div>
+        <div class="tiles">
+          <div class="tile">
+            <div class="k">Protect now?</div>
+            <div class="v" id="pvEligible">—</div>
+            <div class="sub" id="pvReason">previewProtect from chain</div>
+          </div>
+          <div class="tile">
+            <div class="k">Would repay</div>
+            <div class="v" id="pvRepay">—</div>
+          </div>
+          <div class="tile">
+            <div class="k">Protections</div>
+            <div class="v" id="histCount">—</div>
+          </div>
+          <div class="tile">
+            <div class="k">Last protect</div>
+            <div class="v" id="histLast">—</div>
+          </div>
+        </div>
+        <div style="margin-top: 14px">
+          <div class="hf-label">Health factor history</div>
+          <svg id="spark" class="spark" viewBox="0 0 600 90" role="img" aria-label="HF sparkline">
+            <text x="6" y="50">no snapshots yet</text>
+          </svg>
+        </div>
+        <div id="tgBox" class="alert ok hidden" style="margin-top: 12px"></div>
+        <div class="table-wrap" style="margin-top: 12px">
+          <table aria-label="Protections history">
+            <thead>
+              <tr>
+                <th>When</th>
+                <th class="num">Repaid</th>
+                <th class="num">HF before → after</th>
+                <th>Tx</th>
+              </tr>
+            </thead>
+            <tbody id="protRows">
+              <tr>
+                <td colspan="4" class="mute">no protections yet</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 7. Demo lab (testnet only) -->
+      <section class="card demo hidden" id="demoCard" aria-labelledby="demoTitle">
+        <div class="card-head">
+          <h2 id="demoTitle">Demo lab</h2>
+          <span class="badge warn"><span class="dot"></span>testnet mock pool</span>
+        </div>
+        <p class="small mute">
+          Aave V3 is mainnet-only on X Layer, so the testnet uses our MockPool with the same health-factor
+          math. Stage a position in four clicks: mint, supply collateral, borrow, then enroll above. Price
+          dips are owner-only — our sentinel demo script drops the collateral price so you can watch a
+          protection land.
+        </p>
+        <div class="form-grid" style="margin-top: 10px">
+          <label class="field"
+            >Collateral asset
+            <select id="dCollateral"></select>
+          </label>
+          <label class="field"
+            >Collateral amount
+            <input id="dSupplyAmt" type="number" step="any" min="0" value="1" />
+          </label>
+          <label class="field"
+            >Debt asset
+            <select id="dDebt"></select>
+          </label>
+          <label class="field"
+            >Borrow amount
+            <input id="dBorrowAmt" type="number" step="any" min="0" value="1500" />
+          </label>
+        </div>
+        <div class="actions">
+          <button id="dMintCol" class="amber sm" type="button" disabled>Mint collateral</button>
+          <button id="dMintDebt" class="amber sm" type="button" disabled>Mint debt token (buffer)</button>
+          <button id="dSupply" class="amber sm" type="button" disabled>Supply collateral</button>
+          <button id="dBorrow" class="amber sm" type="button" disabled>Borrow</button>
+        </div>
+        <div id="demoLog" class="tx-log" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <div>
+          <h3>Links</h3>
+          <ul>
+            <li>
+              <a id="guardLink" href="#" target="_blank" rel="noopener">SurvivalGuard contract on explorer</a>
+            </li>
+            <li><a id="poolLink" href="#" target="_blank" rel="noopener">Pool on explorer</a></li>
+            <li><a href="/board">Public Survival Board</a></li>
+          </ul>
+          <p class="small" style="margin-top: 12px">
+            By Dark Survivor. Built on X Layer. Not audited.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="/static/app.js"></script>
+  </body>
+</html>
